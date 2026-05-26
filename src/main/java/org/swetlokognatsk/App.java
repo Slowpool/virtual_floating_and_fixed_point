@@ -1,10 +1,10 @@
 package org.swetlokognatsk;
 
 import javafx.application.Application;
-import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.scene.control.Slider;
+import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
@@ -24,37 +24,81 @@ public class App extends Application {
 
     private static Scene scene;
 
-    protected Slider mantissaSizePicker;
-    protected Slider exponentSizePicker;
+    protected final Label mantissaSizeLabel;
+    protected final Slider mantissaSizePicker;
+    protected final HBox mantissaBitsBox;
+
+    protected final Label exponentSizeLabel;
+    protected final Slider exponentSizePicker;
+    protected final HBox exponentBitsBox;
+
+    protected final Label numberLabel;
+
+    protected BorderPane contentArea;
 
     public static void main(String[] args) {
         launch();
     }
 
-    @Override
-    public void start(Stage stage) throws IOException {
+    public App() {
         mantissaSizePicker = buildMantissaSizePicker();
-        var mantissaSizePickerBox = new VBox(new Label("mantissa size"), mantissaSizePicker);
-        var mantissaBits = buildMantissaBits();
-        var mantissaBox = new VBox(mantissaSizePickerBox, mantissaBits);
+        mantissaSizeLabel = new Label(formatMantissaSize());
+
+        var mantissaSizePickerBox = new VBox(mantissaSizeLabel, mantissaSizePicker);
+        mantissaBitsBox = buildMantissaBitsBox();
+
+        var mantissaBox = new VBox(mantissaSizePickerBox, mantissaBitsBox);
 
         exponentSizePicker = buildExponentSizePicker();
-        var exponentSizePickerBox = new VBox(new Label("exponent size"), exponentSizePicker);
-        var exponentBits = buildExponentBits();
-        var exponentBox = new VBox(exponentSizePickerBox, exponentBits);
+        exponentSizeLabel = new Label(formatExponentSize());
 
-        var bitsBox = new HBox(mantissaBox, exponentBox);
+        var exponentSizePickerBox = new VBox(exponentSizeLabel, exponentSizePicker);
+        exponentBitsBox = buildExponentBitsBox();
+
+        var exponentBox = new VBox(exponentSizePickerBox, exponentBitsBox);
+
+        var bitsBox = new HBox(exponentBox, mantissaBox);
         bitsBox.setSpacing(0);
-        scene = new Scene(bitsBox, WIDTH, HEIGHT);
+
+        numberLabel = new Label("1937");
+
+        contentArea = new BorderPane();
+
+        contentArea.setTop(bitsBox);
+        contentArea.setCenter(numberLabel);
+    }
+
+    @Override
+    public void start(Stage stage) throws IOException {
+        scene = new Scene(contentArea, WIDTH, HEIGHT);
         stage.setScene(scene);
         stage.show();
     }
 
+    protected String formatMantissaSize() {
+        int mantissaSize = (int) mantissaSizePicker.getValue();
+        return "mantissa size: " + mantissaSize;
+    }
+
+    protected String formatExponentSize() {
+        int exponentSize = (int) exponentSizePicker.getValue();
+        return "exponent size: " + exponentSize;
+    }
+
     protected Slider buildMantissaSizePicker() {
-        var numberSizePicker = buildPicker();
-        // TODO handlers
-        // numberSizePicker.
-        return numberSizePicker;
+        var mantissaSizePicker = buildPicker();
+        mantissaSizePicker.valueProperty().addListener(e -> {
+            mantissaSizeLabel.setText(formatMantissaSize());
+
+            rebuildMantissaBits();
+        });
+        return mantissaSizePicker;
+    }
+
+    protected void rebuildMantissaBits() {
+        var mantissaBits = buildMantissaBits();
+        var children = mantissaBitsBox.getChildren();
+        children.setAll(mantissaBits);
     }
 
     protected Slider buildPicker() {
@@ -63,25 +107,43 @@ public class App extends Application {
         return picker;
     }
 
-    protected HBox buildMantissaBits() {
-        var bitCells = buildBitCells((int) mantissaSizePicker.getValue());
+    protected HBox buildMantissaBitsBox() {
+        var bitCells = buildMantissaBits();
         var mantissaBits = new HBox(bitCells);
 
         return mantissaBits;
     }
 
+    protected BitCell[] buildMantissaBits() {
+        return buildBitCells((int) mantissaSizePicker.getValue());
+    }
+
     protected Slider buildExponentSizePicker() {
         var exponentSizePicker = buildPicker();
-        // TODO handlers
-        // numberSizePicker.
+
+        exponentSizePicker.valueProperty().addListener(e -> {
+            exponentSizeLabel.setText(formatExponentSize());
+
+            rebuildExponentBits();
+        });
         return exponentSizePicker;
     }
 
-    protected HBox buildExponentBits() {
-        var bitCells = buildBitCells((int) exponentSizePicker.getValue());
+    protected void rebuildExponentBits() {
+        var exponentBits = buildExponentBitsBox();
+        var children = exponentBitsBox.getChildren();
+        children.setAll(exponentBits);
+    }
+
+    protected HBox buildExponentBitsBox() {
+        var bitCells = buildExponentBits();
         var exponentBits = new HBox(bitCells);
 
         return exponentBits;
+    }
+
+    protected BitCell[] buildExponentBits() {
+        return buildBitCells((int) exponentSizePicker.getValue());
     }
 
     protected BitCell[] buildBitCells(int size) {
