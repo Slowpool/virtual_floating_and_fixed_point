@@ -3,6 +3,7 @@ package org.swetlokognatsk.ui;
 import javafx.geometry.Insets;
 import org.swetlokognatsk.model.Bit;
 import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.scene.control.Button;
 import javafx.scene.layout.Background;
 import javafx.scene.layout.BackgroundFill;
@@ -32,8 +33,6 @@ public class BitCell extends Button {
         setHeight(size);
         setMaxWidth(size);
 
-        setOnAction(this::switchBit);
-
         textProperty().addListener(e -> {
             BitCell.this.setBackground(getText().intern() == "1" ? one : zero);
         });
@@ -46,8 +45,8 @@ public class BitCell extends Button {
         return String.valueOf(bit.getValue());
     }
 
-    protected void switchBit(ActionEvent e) {
-        bit = new Bit(bit.getValue() == 1 ? 0 : 1);
+    public void switchBit() {
+        bit = bit.inverse();
         setText(bitToText());
     }
 }

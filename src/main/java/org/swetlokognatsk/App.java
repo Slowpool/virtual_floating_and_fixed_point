@@ -1,15 +1,25 @@
 package org.swetlokognatsk;
 
 import javafx.application.Application;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
+import javafx.geometry.Pos;
 import javafx.scene.Scene;
+import javafx.scene.control.Button;
+import javafx.scene.control.ButtonType;
+import javafx.scene.control.Dialog;
+import javafx.scene.control.DialogPane;
 import javafx.scene.control.Label;
 import javafx.scene.control.Slider;
+import javafx.scene.control.TextField;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import java.io.IOException;
+import java.math.BigInteger;
+
 import org.swetlokognatsk.model.Bit;
 import org.swetlokognatsk.ui.BitCell;
 
@@ -31,6 +41,9 @@ public class App extends Application {
     protected final Label exponentSizeLabel;
     protected final Slider exponentSizePicker;
     protected final HBox exponentBitsBox;
+
+    protected final TextField basisField;
+    protected final HBox basisBox;
 
     protected final Label numberLabel;
 
@@ -57,14 +70,20 @@ public class App extends Application {
 
         var exponentBox = new VBox(exponentSizePickerBox, exponentBitsBox);
 
-        var bitsBox = new HBox(exponentBox, mantissaBox);
+        var bitsBox = new HBox(mantissaBox, exponentBox);
         bitsBox.setSpacing(0);
 
-        numberLabel = new Label("1937");
+        basisField = buildBasisField();
+        basisBox = new HBox(new Label("basis:"), basisField);
+        basisBox.setSpacing(10);
+        basisBox.setAlignment(Pos.CENTER);
+
+        var inputBox = new VBox(bitsBox, basisBox);
 
         contentArea = new BorderPane();
+        contentArea.setTop(inputBox);
 
-        contentArea.setTop(bitsBox);
+        numberLabel = new Label("0");
         contentArea.setCenter(numberLabel);
     }
 
@@ -91,6 +110,7 @@ public class App extends Application {
             mantissaSizeLabel.setText(formatMantissaSize());
 
             rebuildMantissaBits();
+            calculateNumber();
         });
         return mantissaSizePicker;
     }
@@ -110,6 +130,7 @@ public class App extends Application {
     protected HBox buildMantissaBitsBox() {
         var bitCells = buildMantissaBits();
         var mantissaBits = new HBox(bitCells);
+        mantissaBits.setAlignment(Pos.CENTER_RIGHT);
 
         return mantissaBits;
     }
@@ -125,12 +146,13 @@ public class App extends Application {
             exponentSizeLabel.setText(formatExponentSize());
 
             rebuildExponentBits();
+            calculateNumber();
         });
         return exponentSizePicker;
     }
 
     protected void rebuildExponentBits() {
-        var exponentBits = buildExponentBitsBox();
+        var exponentBits = buildExponentBits();
         var children = exponentBitsBox.getChildren();
         children.setAll(exponentBits);
     }
@@ -138,6 +160,7 @@ public class App extends Application {
     protected HBox buildExponentBitsBox() {
         var bitCells = buildExponentBits();
         var exponentBits = new HBox(bitCells);
+        exponentBits.setAlignment(Pos.CENTER_RIGHT);
 
         return exponentBits;
     }
@@ -148,10 +171,82 @@ public class App extends Application {
 
     protected BitCell[] buildBitCells(int size) {
         var bitCells = new BitCell[size];
+        BitCell bitCell;
         for (int i = 0; i < bitCells.length; i++) {
-            bitCells[i] = new BitCell(new Bit(0), BIT_CELL_SIZE);
+            bitCell = new BitCell(new Bit(0), BIT_CELL_SIZE);
+            bitCell.setOnAction(e -> {
+                ((BitCell) e.getTarget()).switchBit();
+                calculateNumber();
+            });
+            bitCells[i] = bitCell;
+
             HBox.setHgrow(bitCells[i], Priority.ALWAYS);
         }
         return bitCells;
+    }
+
+    protected TextField buildBasisField() {
+        var basisField = new TextField();
+        basisField.textProperty().addListener(e -> {
+            calculateNumber();
+        });
+        return basisField;
+    }
+
+    protected void calculateNumber() {
+        try {
+            var mantissa = calculateMantissa();
+            var basis = getBasis();
+            var exponent = calculateExponent();
+
+            BigInteger beforePointNumber = calculateBeforePoint(mantissa, basis, exponent);
+            BigInteger afterPointNumber = calculateAfterPoint(mantissa, basis, exponent);
+            // TODO
+            var number = formatFloatingPointParts(beforePointNumber, afterPointNumber);
+            numberLabel.setText(number);
+        } catch (Exception e) {
+        }
+    }
+
+    protected int calculateMantissa() {
+        // TODO
+        return 10;
+    }
+
+    protected int getBasis() {
+        int basis;
+        try {
+            basis = Integer.valueOf(basisField.getText());
+        } catch (Exception e) {
+            var dialog = new Dialog<Void>();
+            dialog.show();
+            var dialogPane = new DialogPane();
+            dialogPane.setContentText("wrong basis");
+            dialogPane.getButtonTypes().add(ButtonType.OK);
+            dialog.setDialogPane(dialogPane);
+            basis = 10;
+        }
+
+        return basis;
+    }
+
+    protected int calculateExponent() {
+        // var exponentBits = 
+        return 1;
+    }
+
+    protected BigInteger calculateBeforePoint(int mantissa, int basis, int exponent) {
+        // TODO
+        return BigInteger.valueOf((int) (Math.random() * 1000));
+    }
+
+    protected BigInteger calculateAfterPoint(int mantissa, int basis, int exponent) {
+        // TODO
+        return BigInteger.valueOf((int) (Math.random() * 1000));
+    }
+
+    protected String formatFloatingPointParts(BigInteger beforePointNumber, BigInteger afterPointValue) {
+        var formattedNumber = String.format("%s.%s", beforePointNumber, afterPointValue);
+        return formattedNumber;
     }
 }

@@ -13,4 +13,8 @@ public class Bit {
     public int getValue() {
         return value;
     }
+
+    public Bit inverse() {
+        return new Bit(getValue() == 1 ? 0 : 1);
+    }
 }
