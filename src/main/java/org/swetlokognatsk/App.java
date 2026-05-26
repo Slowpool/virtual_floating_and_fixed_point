@@ -1,9 +1,11 @@
 package org.swetlokognatsk;
 
 import javafx.application.Application;
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Pos;
+import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
@@ -19,8 +21,11 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import java.io.IOException;
 import java.math.BigInteger;
-
+import java.util.Arrays;
+import java.util.stream.Stream;
 import org.swetlokognatsk.model.Bit;
+import org.swetlokognatsk.model.Exponent;
+import org.swetlokognatsk.model.Mantissa;
 import org.swetlokognatsk.ui.BitCell;
 
 public class App extends Application {
@@ -201,7 +206,7 @@ public class App extends Application {
 
             BigInteger beforePointNumber = calculateBeforePoint(mantissa, basis, exponent);
             BigInteger afterPointNumber = calculateAfterPoint(mantissa, basis, exponent);
-            // TODO
+
             var number = formatFloatingPointParts(beforePointNumber, afterPointNumber);
             numberLabel.setText(number);
         } catch (Exception e) {
@@ -209,8 +214,18 @@ public class App extends Application {
     }
 
     protected int calculateMantissa() {
-        // TODO
-        return 10;
+        var bitCells = mantissaBitsBox.getChildren();
+        var mantissaBits = getBitsFromCells(bitCells);
+
+        var exponent = new Mantissa(mantissaBits);
+
+        return exponent.getNumber();
+    }
+
+    protected Bit[] getBitsFromCells(ObservableList<Node> bitCells) {
+        Stream<BitCell> stream = Stream.of(bitCells.toArray(BitCell[]::new));
+        var bits = stream.map((BitCell bitCell) -> bitCell.getBit()).toArray(Bit[]::new);
+        return bits;
     }
 
     protected int getBasis() {
@@ -231,8 +246,12 @@ public class App extends Application {
     }
 
     protected int calculateExponent() {
-        // var exponentBits = 
-        return 1;
+        var bitCells = exponentBitsBox.getChildren();
+        var exponentBits = getBitsFromCells(bitCells);
+
+        var exponent = new Exponent(exponentBits);
+
+        return exponent.getNumber();
     }
 
     protected BigInteger calculateBeforePoint(int mantissa, int basis, int exponent) {

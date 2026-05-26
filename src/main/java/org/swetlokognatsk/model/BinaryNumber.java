@@ -11,6 +11,14 @@ public class BinaryNumber {
     protected final int number;
     protected final Bit[] bits;
 
+    public int getNumber() {
+        return number;
+    }
+
+    public Bit[] getBits() {
+        return bits;
+    }
+
     {
         intToBitsConverter = new IntToBitsConverter();
         bitsToIntConverter = new BitsToIntConverter();
