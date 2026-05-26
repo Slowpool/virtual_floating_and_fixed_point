@@ -9,7 +9,7 @@ public class BinaryNumber {
 
     protected final int size;
     protected final int number;
-    protected final PositionedBit[] bits;
+    protected final Bit[] bits;
 
     {
         intToBitsConverter = new IntToBitsConverter();
@@ -24,7 +24,7 @@ public class BinaryNumber {
         this.bits = intToBitsConverter.convert(number, size);
     }
 
-    public BinaryNumber(PositionedBit[] bits) {
+    public BinaryNumber(Bit[] bits) {
         validateSize(bits.length);
         this.size = bits.length;
 

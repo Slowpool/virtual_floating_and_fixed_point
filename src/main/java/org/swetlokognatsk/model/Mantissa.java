@@ -5,7 +5,7 @@ public class Mantissa extends BinaryNumber {
         super(size, number);
     }
 
-    public Mantissa(PositionedBit[] bits) {
+    public Mantissa(Bit[] bits) {
         super(bits);
     }
 }

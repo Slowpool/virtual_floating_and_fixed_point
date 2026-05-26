@@ -5,7 +5,7 @@ public class Exponent extends BinaryNumber {
         super(size, number);
     }
 
-    public Exponent(PositionedBit[] bits) {
+    public Exponent(Bit[] bits) {
         super(bits);
     }
 }

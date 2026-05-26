@@ -3,14 +3,14 @@ package org.swetlokognatsk.services;
 import static org.junit.Assert.*;
 
 import org.junit.Test;
-import org.swetlokognatsk.model.PositionedBit;
 
 public class IntToBitsConverterTest {
+    protected static final int SIZE_32 = 32;
+    
     @Test
     public void test0() {
         var converter = new IntToBitsConverter();
-        var bits = new PositionedBit[32];
-        converter.convert(0, bits);
+        var bits = converter.convert(0, SIZE_32);
         for (var bit : bits) {
             assertEquals(bit.getValue(), 0);
         }
@@ -19,8 +19,7 @@ public class IntToBitsConverterTest {
     @Test
     public void test1() {
         var converter = new IntToBitsConverter();
-        var bits = new PositionedBit[32];
-        converter.convert(1, bits);
+        var bits = converter.convert(1, SIZE_32);
         assertEquals(bits[0].getValue(), 1);
         for (int i = 1; i < bits.length; i++) {
             assertEquals(bits[i].getValue(), 0);
@@ -30,8 +29,7 @@ public class IntToBitsConverterTest {
     @Test
     public void test12345() {
         var converter = new IntToBitsConverter();
-        var bits = new PositionedBit[32];
-        converter.convert(12345, bits);
+        var bits = converter.convert(12345, SIZE_32);
         assertEquals(bits[0].getValue(), 1);
         assertEquals(bits[1].getValue(), 0);
         assertEquals(bits[2].getValue(), 0);

@@ -1,14 +1,14 @@
 package org.swetlokognatsk.services;
 
-import org.swetlokognatsk.model.PositionedBit;
+import org.swetlokognatsk.model.Bit;
 
 public class IntToBitsConverter {
-    public PositionedBit[] convert(int number, int size) {
-        PositionedBit[] bits = new PositionedBit[size];
+    public Bit[] convert(int number, int size) {
+        Bit[] bits = new Bit[size];
         int value;
         for (int i = 0; i < bits.length; i++) {
             value = intHasBit(number, i) ? 1 : 0;
-            bits[i] = new PositionedBit(value, i);
+            bits[i] = new Bit(value);
         }
         return bits;
     }
