@@ -1,10 +1,13 @@
 package org.swetlokognatsk.model;
 
 public class Bit {
+    public static int ONE = 1;
+    public static int ZERO = 0;
+
     protected int value;
 
     public Bit(int value) {
-        if (value != 0 && value != 1) {
+        if (value != ZERO && value != ONE) {
             throw new IllegalArgumentException("bit must be either 0 either 1, not " + value);
         }
         this.value = value;
@@ -15,6 +18,6 @@ public class Bit {
     }
 
     public Bit inverse() {
-        return new Bit(getValue() == 1 ? 0 : 1);
+        return new Bit(getValue() == ONE ? ZERO : ONE);
     }
 }

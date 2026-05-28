@@ -1,13 +1,11 @@
 package org.swetlokognatsk;
 
 import javafx.application.Application;
+import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.Dialog;
 import javafx.scene.control.DialogPane;
@@ -20,20 +18,20 @@ import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import java.io.IOException;
-import java.math.BigInteger;
-import java.util.Arrays;
 import java.util.stream.Stream;
+import org.apache.commons.lang3.ArrayUtils;
 import org.swetlokognatsk.model.Bit;
 import org.swetlokognatsk.model.Exponent;
 import org.swetlokognatsk.model.Mantissa;
+import org.swetlokognatsk.services.NumberFormatter;
 import org.swetlokognatsk.ui.BitCell;
 
 public class App extends Application {
-
     protected static final int WIDTH = 1920;
     protected static final int HEIGHT = 700;
 
-    protected static final int MIN_BITS = 1;
+    // one bit for sign + one bit for value = 2
+    protected static final int MIN_BITS = 2;
     protected static final int MAX_BITS = 32;
     protected static final int BIT_CELL_SIZE = WIDTH / (MAX_BITS * 2);
 
@@ -204,10 +202,8 @@ public class App extends Application {
             var basis = getBasis();
             var exponent = calculateExponent();
 
-            BigInteger beforePointNumber = calculateBeforePoint(mantissa, basis, exponent);
-            BigInteger afterPointNumber = calculateAfterPoint(mantissa, basis, exponent);
+            String number = NumberFormatter.format(mantissa, basis, exponent);
 
-            var number = formatFloatingPointParts(beforePointNumber, afterPointNumber);
             numberLabel.setText(number);
         } catch (Exception e) {
         }
@@ -225,10 +221,11 @@ public class App extends Application {
     protected Bit[] getBitsFromCells(ObservableList<Node> bitCells) {
         Stream<BitCell> stream = Stream.of(bitCells.toArray(BitCell[]::new));
         var bits = stream.map((BitCell bitCell) -> bitCell.getBit()).toArray(Bit[]::new);
+        ArrayUtils.reverse(bits);
         return bits;
     }
 
-    protected int getBasis() {
+    protected int getBasis() throws Exception {
         int basis;
         try {
             basis = Integer.valueOf(basisField.getText());
@@ -239,7 +236,7 @@ public class App extends Application {
             dialogPane.setContentText("wrong basis");
             dialogPane.getButtonTypes().add(ButtonType.OK);
             dialog.setDialogPane(dialogPane);
-            basis = 10;
+            throw new Exception(e);
         }
 
         return basis;
@@ -254,18 +251,4 @@ public class App extends Application {
         return exponent.getNumber();
     }
 
-    protected BigInteger calculateBeforePoint(int mantissa, int basis, int exponent) {
-        // TODO
-        return BigInteger.valueOf((int) (Math.random() * 1000));
-    }
-
-    protected BigInteger calculateAfterPoint(int mantissa, int basis, int exponent) {
-        // TODO
-        return BigInteger.valueOf((int) (Math.random() * 1000));
-    }
-
-    protected String formatFloatingPointParts(BigInteger beforePointNumber, BigInteger afterPointValue) {
-        var formattedNumber = String.format("%s.%s", beforePointNumber, afterPointValue);
-        return formattedNumber;
-    }
 }
