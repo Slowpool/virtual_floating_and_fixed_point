@@ -11,6 +11,7 @@ import javafx.scene.control.Dialog;
 import javafx.scene.control.DialogPane;
 import javafx.scene.control.Label;
 import javafx.scene.control.Slider;
+import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
@@ -48,7 +49,7 @@ public class App extends Application {
     protected final TextField basisField;
     protected final HBox basisBox;
 
-    protected final Label numberLabel;
+    protected final TextArea numberField;
 
     protected BorderPane contentArea;
 
@@ -86,8 +87,10 @@ public class App extends Application {
         contentArea = new BorderPane();
         contentArea.setTop(inputBox);
 
-        numberLabel = new Label("0");
-        contentArea.setCenter(numberLabel);
+        numberField = new TextArea("0.0");
+        numberField.setEditable(false);
+        numberField.setWrapText(true);
+        contentArea.setCenter(numberField);
     }
 
     @Override
@@ -204,7 +207,7 @@ public class App extends Application {
 
             String number = NumberFormatter.format(mantissa, basis, exponent);
 
-            numberLabel.setText(number);
+            numberField.setText(number);
         } catch (Exception e) {
         }
     }

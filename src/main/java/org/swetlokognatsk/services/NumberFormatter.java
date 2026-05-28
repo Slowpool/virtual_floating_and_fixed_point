@@ -1,5 +1,7 @@
 package org.swetlokognatsk.services;
 
+import java.math.BigDecimal;
+
 public class NumberFormatter {
     protected static final String POINT = ".";
     protected static final String MINUS = "-";
@@ -45,7 +47,7 @@ public class NumberFormatter {
     }
 
     protected static void movePointToLeft(StringBuilder number, int exponent) {
-        int numberOfZeros = exponent;
+        int numberOfZeros = Math.abs(exponent);
 
         var zeros = buildZeros(numberOfZeros);
         number.insert(0, zeros);
@@ -63,12 +65,15 @@ public class NumberFormatter {
     protected static void movePointToRight(StringBuilder number, int exponent) {
         var fractionLength = number.length() - BASE_POSITION_OF_POINT;
         if (exponent >= fractionLength) {
-            var numberOfZeros = fractionLength - exponent + 1;
+            var numberOfZeros = exponent - fractionLength + 1;
             var zeros = buildZeros(numberOfZeros);
             number.append(zeros);
+            number.insert(number.length() - 1, POINT);
+        }
+        else {
+            number.insert(BASE_POSITION_OF_POINT + exponent, POINT);
         }
 
-        number.insert(number.length() - 1, POINT);
     }
 
     protected static String buildZeros(int numberOfZeros) {
